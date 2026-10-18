@@ -11,7 +11,7 @@ Também traz apoio ao diagnóstico: um painel de indicadores e o registro de **e
 
 ## Stack
 
-- Laravel 13 (PHP 8.3+), Blade
+- Laravel 13 (PHP 8.4+), Blade
 - MySQL 8 (índices FULLTEXT)
 - Sass (`resources/scss`), compilado pelo Vite
 - JavaScript (ES modules, sem framework) e Chart.js no painel
@@ -127,6 +127,46 @@ Meta: **WCAG 2.1 nível AA**.
 
 **Auditoria:** [axe-core 4.10](https://github.com/dequelabs/axe-core) (o motor do Lighthouse), regras WCAG 2 A/AA, 2.1 AA e boas práticas. **0 violações** em login, fila, chamado aberto, chamado encerrado, registro de chamado, busca, base de conhecimento, artigo, indicadores, entrevistas e formulário de entrevista, nos temas claro e escuro. Garantias estruturais (skip link, idioma, `aria-current`, nomes de botões) também têm testes automatizados em `tests/Feature/AccessibilityTest.php`.
 
+## Publicação na nuvem (alwaysdata)
+
+O Atendly roda no plano gratuito do [alwaysdata](https://www.alwaysdata.com): 1 GB de disco, 256 MB de RAM, PHP 8.4+, MariaDB e SSH. No passo a passo, troque `[conta]` pelo nome da sua conta.
+
+### 1. No painel (uma vez só)
+
+| Onde | O que fazer |
+|---|---|
+| **Environment > PHP** | Escolha **PHP 8.4** ou superior (o projeto exige ≥ 8.4.1) |
+| **Databases > MySQL** | Crie o banco **`[conta]_atendly`** e anote usuário e senha (o host é `mysql-[conta].alwaysdata.net`) |
+| **Remote access > SSH** | Habilite o usuário SSH com senha (ou cadastre sua chave pública) |
+| **Web > Sites** | Edite o site `[conta].alwaysdata.net`: tipo **PHP**, *Root directory* **`/atendly/public`** |
+
+### 2. Primeira instalação (do seu computador)
+
+```powershell
+git push
+.\deploy\deploy.ps1 -Conta [conta] -Install
+```
+
+Na primeira execução, o script baixa o código no servidor, cria o `~/atendly/.env` a partir de [`deploy/env.alwaysdata.example`](deploy/env.alwaysdata.example) e para, pedindo os dados do banco. Preencha:
+
+```bash
+ssh [conta]@ssh-[conta].alwaysdata.net
+nano ~/atendly/.env     # APP_URL, DB_DATABASE, DB_USERNAME, DB_PASSWORD
+```
+
+Rode `.\deploy\deploy.ps1 -Conta [conta] -Install` de novo. Ele gera `APP_KEY`, o token da integração e uma **senha forte para as contas demo**, mostrada ao final, cria as tabelas e carrega a base demo.
+
+### 3. Atualizações
+
+```powershell
+git push
+.\deploy\deploy.ps1 -Conta [conta]
+```
+
+O CSS/JS é compilado no seu computador e enviado por `scp`, porque o plano gratuito tem pouca RAM para o Vite. O resto (`git pull`, `composer install --no-dev`, migrations e cache) roda no servidor via [`deploy/server.sh`](deploy/server.sh).
+
+**Detalhes de produção já configurados:** `APP_DEBUG=false`, cookies de sessão só em HTTPS, confiança no proxy HTTPS do alwaysdata (links gerados com `https://`), cache de configuração, rotas e views (`php artisan optimize`), e senha das contas demo definida por `ATENDLY_DEMO_PASSWORD`, nunca "password" em produção. Para o "esqueci a senha" enviar e-mails de verdade, crie um endereço em **Emails** no painel e troque `MAIL_MAILER=log` por `smtp` no `.env`.
+
 ## Configuração (`.env`)
 
 | Variável | Padrão | Uso |
@@ -138,6 +178,7 @@ Meta: **WCAG 2.1 nível AA**.
 | `ATENDLY_BLOCK_NON_BUSINESS_DAYS` | true | Bloqueia o registro manual em fins de semana e feriados |
 | `ATENDLY_HOLIDAYS_API` | BrasilAPI | Endereço da API de feriados |
 | `ATENDLY_SHOW_TEST_MARKS` | false | Mostra o selo "Teste" nos dados demo |
+| `ATENDLY_DEMO_PASSWORD` | password | Senha das contas criadas pelo seeder (troque em produção) |
 
 As metas de resposta e de resolução por categoria ficam na tabela `categories`.
 

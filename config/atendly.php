@@ -22,6 +22,10 @@ return [
     // Chamados vindos da integração continuam sendo aceitos (são abertos no sistema de origem).
     'block_non_business_days' => (bool) env('ATENDLY_BLOCK_NON_BUSINESS_DAYS', true),
 
+    // Senha das contas criadas pelo seeder (admin@ e tecnico1..4@atendly.test).
+    // Em produção/demonstração pública, defina uma senha forte no .env.
+    'demo_password' => env('ATENDLY_DEMO_PASSWORD', 'password'),
+
     // API pública de feriados nacionais (BrasilAPI).
     'holidays_api' => env('ATENDLY_HOLIDAYS_API', 'https://brasilapi.com.br/api/feriados/v1'),
 

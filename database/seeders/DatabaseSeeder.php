@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         User::updateOrCreate(['email' => 'admin@atendly.test'], [
             'name' => 'Administrador',
-            'password' => 'password',
+            'password' => config('atendly.demo_password'),
             'role' => UserRole::Admin,
         ]);
 

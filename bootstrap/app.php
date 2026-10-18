@@ -18,6 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'integration' => EnsureIntegrationToken::class,
         ]);
         $middleware->redirectGuestsTo('/login');
+
+        // Em hospedagens como o alwaysdata o HTTPS termina num proxy antes do PHP:
+        // confiar nos cabeçalhos X-Forwarded-* faz o Laravel gerar links https://.
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

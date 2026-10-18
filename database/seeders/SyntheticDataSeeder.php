@@ -71,7 +71,7 @@ class SyntheticDataSeeder extends Seeder
         foreach (['Alfa', 'Beta', 'Gama', 'Delta'] as $i => $name) {
             User::updateOrCreate(['email' => 'tecnico'.($i + 1).'@atendly.test'], [
                 'name' => "Técnico {$name}",
-                'password' => 'password',
+                'password' => config('atendly.demo_password'),
                 'role' => UserRole::Tecnico,
             ]);
         }

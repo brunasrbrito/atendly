@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Ticket;
 use App\Services\TicketService;
 use App\Support\SyntheticTicketGenerator;
 use Illuminate\Support\Facades\Artisan;
@@ -23,3 +24,17 @@ Artisan::command('atendly:simular {quantidade=1} {--intervalo=0 : Segundos entre
         }
     }
 })->purpose('Simula a chegada de chamados sintéticos vindos do sistema de terceiros');
+
+/*
+| Carrega a base demo apenas se o banco ainda não tem chamados.
+| Usado na instalação em produção: rodar o install de novo não duplica dados.
+*/
+Artisan::command('atendly:demo {--force : Carrega mesmo se já houver chamados}', function () {
+    if (Ticket::query()->exists() && ! $this->option('force')) {
+        $this->info('O banco já tem chamados: base demo mantida como está.');
+
+        return;
+    }
+
+    $this->call('db:seed', ['--force' => true]);
+})->purpose('Carrega a base de dados demo (somente em banco vazio)');

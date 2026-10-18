@@ -136,31 +136,23 @@ O Atendly roda no plano gratuito do [alwaysdata](https://www.alwaysdata.com): 1 
 | Onde | O que fazer |
 |---|---|
 | **Environment > PHP** | Escolha **PHP 8.4** ou superior (o projeto exige ≥ 8.4.1) |
-| **Databases > MySQL** | Crie o banco **`[conta]_atendly`** e anote usuário e senha (o host é `mysql-[conta].alwaysdata.net`) |
+| **Databases > MySQL** | Crie o banco **`[conta]_db`** com *all rights* para o usuário `[conta]` e tenha a senha desse usuário em mãos |
 | **Remote access > SSH** | Habilite o usuário SSH com senha (ou cadastre sua chave pública) |
-| **Web > Sites** | Edite o site `[conta].alwaysdata.net`: tipo **PHP**, *Root directory* **`/atendly/public`** |
+| **Web > Sites** | Edite o site `[conta].alwaysdata.net`: tipo **PHP**, *Root directory* **`atendly/public`**, PHP 8.4. Em *Custom php.ini*: `upload_max_filesize = 12M` e `post_max_size = 60M` |
 
 ### 2. Primeira instalação (do seu computador)
 
 ```powershell
 git push
-.\deploy\deploy.ps1 -Conta [conta] -Install
+powershell -ExecutionPolicy Bypass -File .\deploy\deploy.ps1 -Conta [conta] -Install
 ```
 
-Na primeira execução, o script baixa o código no servidor, cria o `~/atendly/.env` a partir de [`deploy/env.alwaysdata.example`](deploy/env.alwaysdata.example) e para, pedindo os dados do banco. Preencha:
-
-```bash
-ssh [conta]@ssh-[conta].alwaysdata.net
-nano ~/atendly/.env     # APP_URL, DB_DATABASE, DB_USERNAME, DB_PASSWORD
-```
-
-Rode `.\deploy\deploy.ps1 -Conta [conta] -Install` de novo. Ele gera `APP_KEY`, o token da integração e uma **senha forte para as contas demo**, mostrada ao final, cria as tabelas e carrega a base demo.
-
+O script pede a **senha do SSH** algumas vezes e, uma vez, a **senha do banco**. Ele cria o `~/atendly/.env` sozinho a partir de [`deploy/env.alwaysdata.example`](deploy/env.alwaysdata.example): troca `[conta]` pelo nome da conta, grava a senha do banco e gera `APP_KEY`, o token da integração e uma **senha forte para as contas demo**, mostrada ao final. Depois cria as tabelas e carrega a base demo (só se o banco estiver vazio, então rodar de novo não duplica dados). Se algo falhar, o script para e mostra o motivo.
 ### 3. Atualizações
 
 ```powershell
 git push
-.\deploy\deploy.ps1 -Conta [conta]
+powershell -ExecutionPolicy Bypass -File .\deploy\deploy.ps1 -Conta [conta]
 ```
 
 O CSS/JS é compilado no seu computador e enviado por `scp`, porque o plano gratuito tem pouca RAM para o Vite. O resto (`git pull`, `composer install --no-dev`, migrations e cache) roda no servidor via [`deploy/server.sh`](deploy/server.sh).

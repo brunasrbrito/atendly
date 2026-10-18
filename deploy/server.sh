@@ -42,11 +42,28 @@ say "Instalando dependências PHP (sem pacotes de desenvolvimento)"
 $COMPOSER install --no-dev --optimize-autoloader --no-interaction --no-progress
 
 if [ "$MODE" = "install" ]; then
-    if [ ! -f .env ]; then
+    # No alwaysdata o usuário SSH é o próprio nome da conta.
+    ACCOUNT="${ACCOUNT:-$(whoami)}"
+
+    # .env inexistente ou ainda não configurado (com marcadores): parte do modelo atual.
+    if [ ! -f .env ] || grep -q '\[conta\]' .env; then
+        say "Criando .env para a conta $ACCOUNT"
         cp deploy/env.alwaysdata.example .env
-        fail "Criei o .env a partir do modelo. Edite ~/atendly/.env (banco, URL) e rode o install de novo."
+        sed -i "s/\[conta\]/$ACCOUNT/g" .env
     fi
-    grep -q '\[conta\]' .env && fail "O .env ainda tem [conta]/[senha]. Preencha os dados e rode de novo."
+
+    # Senha do banco: perguntada no terminal (não aparece na tela nem fica no histórico).
+    if grep -q '^DB_PASSWORD=\[senha-do-banco\]$' .env; then
+        [ -t 0 ] || fail "Falta a senha do banco. Rode: nano ~/atendly/.env  (linha DB_PASSWORD) e depois o install de novo."
+        read -rsp "Senha do banco MySQL do usuário $ACCOUNT (Databases > MySQL > Users): " DB_PASS
+        echo
+        [ -n "$DB_PASS" ] || fail "Senha vazia."
+        case "$DB_PASS" in *"'"*) fail "A senha não pode ter aspas simples ('). Troque a senha do banco no painel e rode de novo." ;; esac
+        # Grava entre aspas simples: o .env não interpreta $ ou # dentro delas.
+        DB_PASS="$DB_PASS" php -r '$f = ".env"; file_put_contents($f, preg_replace("/^DB_PASSWORD=.*$/m", "DB_PASSWORD=\x27" . getenv("DB_PASS") . "\x27", file_get_contents($f)));'
+        unset DB_PASS
+    fi
+    grep -q '\[conta\]\|\[senha' .env && fail "O ~/atendly/.env ainda tem marcadores [ ]. Edite com: nano ~/atendly/.env"
 
     if ! grep -q '^APP_KEY=base64' .env; then
         php artisan key:generate --force
@@ -67,10 +84,12 @@ php artisan storage:link --force >/dev/null 2>&1 || true
 php artisan config:clear >/dev/null
 
 say "Banco de dados"
+DB_HINT="Não consegui usar o banco. Confira em ~/atendly/.env: DB_DATABASE (o nome criado no painel, ex.: $(whoami)_db) e DB_PASSWORD."
 if [ "$MODE" = "install" ]; then
-    php artisan migrate --force --seed
+    php artisan migrate --force || fail "$DB_HINT"
+    php artisan atendly:demo
 else
-    php artisan migrate --force
+    php artisan migrate --force || fail "$DB_HINT"
 fi
 
 say "Otimizando para produção"

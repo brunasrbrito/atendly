@@ -1,0 +1,414 @@
+@use '../abstracts/tokens' as *;
+
+// Botões ------------------------------------------------------------------
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    height: 36px;
+    padding: 0 0.95rem;
+    border: 1px solid var(--border-strong);
+    border-radius: $radius-sm;
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: var(--shadow-sm);
+    transition: background 0.15s, border-color 0.15s, transform 0.05s, box-shadow 0.15s;
+
+    &:hover {
+        background: var(--surface-2);
+        border-color: var(--border-strong);
+        text-decoration: none;
+    }
+
+    &:active {
+        transform: translateY(1px);
+    }
+
+    &:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+    }
+
+    svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    &--primary {
+        background: var(--primary);
+        border-color: transparent;
+        color: #fff;
+        box-shadow: 0 1px 2px rgb(13 138 116 / 30%), inset 0 1px 0 rgb(255 255 255 / 12%);
+
+        &:hover {
+            background: var(--primary-hover);
+            border-color: transparent;
+        }
+    }
+
+    &--attention {
+        background: $attention;
+        border-color: transparent;
+        color: #2b1900;
+
+        &:hover {
+            background: $attention-strong;
+            border-color: transparent;
+            color: #fff;
+        }
+    }
+
+    &--danger {
+        color: var(--danger);
+
+        &:hover {
+            background: var(--danger-soft);
+        }
+    }
+
+    &--ghost {
+        border-color: transparent;
+        background: transparent;
+        box-shadow: none;
+
+        &:hover {
+            background: var(--surface-3);
+            border-color: transparent;
+        }
+    }
+
+    &--icon {
+        width: 36px;
+        padding: 0;
+    }
+
+    &--sm {
+        height: 30px;
+        padding: 0 0.7rem;
+        font-size: 12.5px;
+
+        &.btn--icon {
+            width: 30px;
+            padding: 0;
+        }
+    }
+
+    &--lg {
+        height: 42px;
+        padding: 0 1.2rem;
+        font-size: 14px;
+    }
+
+    &--block {
+        width: 100%;
+    }
+
+    &.is-recording {
+        background: var(--danger);
+        border-color: var(--danger);
+        color: #fff;
+        animation: pulse 1.2s infinite;
+    }
+
+    &.has-dot {
+        position: relative;
+
+        &::after {
+            content: '';
+            position: absolute;
+            top: 7px;
+            right: 7px;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: $attention;
+            box-shadow: 0 0 0 2px var(--bg);
+        }
+    }
+}
+
+// Formulários ---------------------------------------------------------------
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 1.1rem;
+
+    > label,
+    &__label {
+        font-weight: 600;
+        font-size: 13px;
+    }
+
+    &__hint {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+
+    &__error {
+        font-size: 12.5px;
+        font-weight: 500;
+        color: var(--danger);
+    }
+}
+
+.input,
+.select,
+.textarea {
+    width: 100%;
+    min-height: 38px;
+    padding: 0.5rem 0.8rem;
+    border: 1px solid var(--border-strong);
+    border-radius: $radius-sm;
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &::placeholder {
+        color: var(--text-subtle);
+    }
+
+    &:hover {
+        border-color: color-mix(in srgb, var(--primary) 35%, var(--border-strong));
+    }
+
+    &:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent);
+    }
+
+    &.is-invalid {
+        border-color: var(--danger);
+    }
+}
+
+.textarea {
+    min-height: 110px;
+    resize: vertical;
+    line-height: 1.55;
+}
+
+.select {
+    appearance: none;
+    padding-right: 2rem;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a9895' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.7rem center;
+
+    &--sm {
+        min-height: 32px;
+        padding-top: 0.3rem;
+        padding-bottom: 0.3rem;
+        font-size: 13px;
+    }
+}
+
+.check {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    font-weight: 500;
+    cursor: pointer;
+
+    input {
+        width: 16px;
+        height: 16px;
+        margin-top: 2px;
+        accent-color: var(--primary);
+    }
+}
+
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+
+    .check {
+        align-items: center;
+        padding: 0.35rem 0.8rem;
+        border: 1px solid var(--border-strong);
+        border-radius: 999px;
+        font-size: 12.5px;
+        transition: background 0.15s, border-color 0.15s;
+
+        input {
+            display: none;
+        }
+
+        &:hover {
+            border-color: var(--primary);
+        }
+
+        &:has(input:checked) {
+            background: var(--primary-soft);
+            border-color: var(--primary);
+            color: var(--primary-text);
+            font-weight: 600;
+        }
+    }
+}
+
+.search-box {
+    position: relative;
+
+    > svg {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        width: 16px;
+        height: 16px;
+        transform: translateY(-50%);
+        color: var(--text-subtle);
+        pointer-events: none;
+    }
+
+    .input {
+        padding-left: 2.3rem;
+    }
+
+    &--lg {
+        > svg {
+            left: 1rem;
+            width: 20px;
+            height: 20px;
+        }
+
+        .input {
+            min-height: 54px;
+            padding-left: 2.9rem;
+            border-radius: $radius;
+            font-size: 1.05rem;
+            box-shadow: var(--shadow);
+        }
+    }
+}
+
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    .select {
+        width: auto;
+        min-width: 170px;
+    }
+
+    .search-box {
+        flex: 1;
+        min-width: 200px;
+        max-width: 340px;
+    }
+
+    @include down(sm) {
+        width: 100%;
+
+        .search-box {
+            max-width: none;
+            flex-basis: 100%;
+        }
+
+        .select {
+            flex: 1;
+            min-width: 0;
+        }
+    }
+}
+
+// Controle segmentado (visões da fila) -----------------------------------------------
+.segmented {
+    display: inline-flex;
+    gap: 2px;
+    padding: 3px;
+    margin-bottom: 1rem;
+    border-radius: $radius;
+    background: var(--surface-3);
+    max-width: 100%;
+    overflow-x: auto;
+
+    &__item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.42rem 0.85rem;
+        border-radius: $radius-sm;
+        color: var(--text-muted);
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+
+        &:hover {
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        &.is-active {
+            background: var(--surface);
+            color: var(--text);
+            box-shadow: var(--shadow);
+        }
+    }
+
+    &__count {
+        min-width: 20px;
+        padding: 0 6px;
+        border-radius: 999px;
+        background: var(--surface-3);
+        font-size: 11px;
+        line-height: 18px;
+        text-align: center;
+        color: var(--text-muted);
+
+        &.is-alert {
+            background: $attention;
+            color: #2b1900;
+        }
+    }
+}
+
+// Abas simples ---------------------------------------------------------------
+.tabs {
+    display: flex;
+    gap: 0.25rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1rem;
+    overflow-x: auto;
+
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.6rem 0.9rem;
+        border-bottom: 2px solid transparent;
+        color: var(--text-muted);
+        font-weight: 600;
+        white-space: nowrap;
+
+        &:hover {
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        &.is-active {
+            color: var(--primary-text);
+            border-bottom-color: var(--primary);
+        }
+    }
+}
+
+@keyframes pulse {
+    50% {
+        opacity: 0.7;
+    }
+}

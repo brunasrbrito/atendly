@@ -1,0 +1,78 @@
+@use 'sass:map';
+
+// Identidade Atendly
+// - Verde-água (teal): atendimento, calma, "resolvido".
+// - Âmbar: atenção — tudo o que está esperando alguém perceber.
+// Os valores finais de tema ficam em custom properties (claro/escuro) em base/_theme.
+$brand: (
+    50: #effcf9,
+    100: #cdf6ec,
+    200: #9cecd9,
+    300: #5fdcc0,
+    400: #2cc4a6,
+    500: #14a98d,
+    600: #0d8a74,
+    700: #0f6e5f,
+    800: #11584d,
+    900: #0b3a34,
+);
+
+$attention: #f59e0b;
+$attention-strong: #d97706;
+
+$status: (
+    novo: #f59e0b,
+    em_atendimento: #0ea5e9,
+    aguardando: #a855f7,
+    resolvido: #10b981,
+    fechado: #64748b,
+);
+
+$priority: (
+    baixa: #94a3b8,
+    media: #0ea5e9,
+    alta: #f97316,
+    critica: #ef4444,
+);
+
+$font-sans: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+$font-mono: ui-monospace, 'Cascadia Code', 'SF Mono', Consolas, monospace;
+
+$radius-lg: 14px;
+$radius: 10px;
+$radius-sm: 7px;
+$sidebar-width: 252px;
+$topbar-height: 60px;
+
+$breakpoints: (
+    sm: 640px,
+    md: 900px,
+    lg: 1200px,
+);
+
+@function brand($shade) {
+    @return map.get($brand, $shade);
+}
+
+@mixin up($bp) {
+    @media (min-width: map.get($breakpoints, $bp)) {
+        @content;
+    }
+}
+
+@mixin down($bp) {
+    @media (max-width: map.get($breakpoints, $bp) - 1px) {
+        @content;
+    }
+}
+
+@mixin focus-ring {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+}
+
+@mixin truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

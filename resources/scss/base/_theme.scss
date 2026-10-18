@@ -1,0 +1,104 @@
+@use '../abstracts/tokens' as *;
+
+:root {
+    color-scheme: light;
+    --bg: #f4f7f6;
+    --surface: #ffffff;
+    --surface-2: #f7faf9;
+    --surface-3: #eef3f2;
+    --border: #e2e9e7;
+    --border-strong: #cfdad7;
+    --text: #12201e;
+    --text-muted: #5e6e6b;
+    --text-subtle: #8a9895;
+    --primary: #{brand(600)};
+    --primary-hover: #{brand(700)};
+    --primary-soft: #{brand(50)};
+    --primary-text: #{brand(700)};
+    --focus: #{brand(400)};
+    --attention: #{$attention};
+    --attention-soft: #fff7e6;
+    --attention-text: #9a5b00;
+    --danger: #dc2626;
+    --danger-soft: #fef2f2;
+    --warning: #b45309;
+    --warning-soft: #fffbeb;
+    --success: #047857;
+    --success-soft: #ecfdf5;
+    --sidebar-bg: #0b1a1d;
+    --sidebar-text: #a9bab7;
+    --sidebar-muted: #61716e;
+    --sidebar-hover: #13272b;
+    --sidebar-active: #173238;
+    --mark: #fde68a;
+    --shadow-sm: 0 1px 2px rgb(16 32 30 / 5%);
+    --shadow: 0 1px 2px rgb(16 32 30 / 5%), 0 2px 6px rgb(16 32 30 / 5%);
+    --shadow-lg: 0 16px 40px rgb(16 32 30 / 14%), 0 2px 6px rgb(16 32 30 / 6%);
+}
+
+@mixin dark-tokens {
+    color-scheme: dark;
+    --bg: #0a1416;
+    --surface: #101e21;
+    --surface-2: #142528;
+    --surface-3: #1a2e32;
+    --border: #213538;
+    --border-strong: #2d4549;
+    --text: #e4eeec;
+    --text-muted: #93a5a2;
+    --text-subtle: #6c7f7c;
+    --primary: #{brand(500)};
+    --primary-hover: #{brand(400)};
+    --primary-soft: #10302b;
+    --primary-text: #{brand(300)};
+    --attention-soft: #33250b;
+    --attention-text: #fbbf24;
+    --danger: #f87171;
+    --danger-soft: #361719;
+    --warning: #fbbf24;
+    --warning-soft: #33280e;
+    --success: #34d399;
+    --success-soft: #0f2e24;
+    --sidebar-bg: #071012;
+    --sidebar-hover: #0f1f22;
+    --sidebar-active: #13292d;
+    --mark: #7c5a0b;
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 30%);
+    --shadow: 0 1px 2px rgb(0 0 0 / 35%), 0 2px 8px rgb(0 0 0 / 25%);
+    --shadow-lg: 0 16px 40px rgb(0 0 0 / 55%);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+        @include dark-tokens;
+    }
+}
+
+:root[data-theme='dark'] {
+    @include dark-tokens;
+}
+
+// Ícone do botão de tema: lua no claro, sol no escuro.
+[data-theme-icon='light'] {
+    display: none;
+}
+
+@mixin dark-icons {
+    [data-theme-icon='dark'] {
+        display: none;
+    }
+
+    [data-theme-icon='light'] {
+        display: block;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+        @include dark-icons;
+    }
+}
+
+:root[data-theme='dark'] {
+    @include dark-icons;
+}

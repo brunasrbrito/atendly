@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\KnowledgeArticle;
 use App\Models\Ticket;
 use App\Models\User;
+use App\Services\BusinessCalendar;
 use App\Services\KnowledgeSearch;
 use App\Services\TicketService;
 use Illuminate\Http\RedirectResponse;
@@ -27,7 +28,7 @@ class TicketController extends Controller
         'todos' => 'Todos',
     ];
 
-    public function __construct(private TicketService $tickets) {}
+    public function __construct(private TicketService $tickets, private BusinessCalendar $calendar) {}
 
     public function index(Request $request): View
     {
@@ -59,6 +60,7 @@ class TicketController extends Controller
 
         return view('tickets.index', [
             'tickets' => $tickets,
+            'registrationBlock' => $this->calendar->manualRegistrationBlock(),
             'pending' => [
                 'count' => $pending->count(),
                 'late' => $pending->filter->isPerceptionLate()->count(),
@@ -85,6 +87,7 @@ class TicketController extends Controller
 
         return view('tickets.create', [
             'related' => $related,
+            'registrationBlock' => $this->calendar->manualRegistrationBlock(),
             'categories' => Category::orderBy('name')->get(),
             'priorities' => TicketPriority::cases(),
         ]);
@@ -92,6 +95,11 @@ class TicketController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        // Registro manual só em dias úteis (fins de semana e feriados nacionais via BrasilAPI).
+        if ($block = $this->calendar->manualRegistrationBlock()) {
+            return redirect()->route('tickets.create')->withInput()->with('error', "Não é possível registrar chamados hoje ({$block['reason']}). O registro manual volta a funcionar em {$block['next']->translatedFormat('l, d/m')}.");
+        }
+
         $data = $request->validate([
             'external_id' => ['nullable', 'string', 'max:100', 'unique:tickets,external_id'],
             'title' => ['required', 'string', 'max:255'],

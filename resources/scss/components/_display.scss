@@ -131,7 +131,7 @@
     font-weight: 650;
     line-height: 1.65;
     white-space: nowrap;
-    color: color-mix(in srgb, var(--badge) 78%, var(--text));
+    color: color-mix(in srgb, var(--badge) var(--badge-ink), var(--text));
     background: color-mix(in srgb, var(--badge) 13%, transparent);
 
     &--dot::before {
@@ -154,7 +154,7 @@
     }
 
     &--late {
-        --badge: #dc2626;
+        --badge: var(--danger);
     }
 
     &--article {

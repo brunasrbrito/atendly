@@ -7,7 +7,7 @@
                     <img src="{{ $url }}" alt="{{ $file->original_name }}" loading="lazy">
                 </a>
             @elseif ($file->kind === 'audio')
-                <audio controls preload="none" src="{{ $url }}" title="{{ $file->original_name }}"></audio>
+                <audio controls preload="none" src="{{ $url }}" title="{{ $file->original_name }}" aria-label="Áudio: {{ $file->original_name }}"></audio>
             @else
                 <a class="btn btn--sm" href="{{ $url }}" target="_blank" rel="noopener"><x-icon name="paperclip" /> {{ $file->original_name }}</a>
             @endif

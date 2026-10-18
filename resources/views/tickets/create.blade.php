@@ -7,9 +7,17 @@
         </div>
     </div>
 
+    @if ($registrationBlock)
+        <div class="alert alert--warning form-card" role="alert">
+            <x-icon name="clock" />
+            <span><strong>{{ $registrationBlock['reason'] }}.</strong> O registro manual de chamados só é permitido em dias úteis. Volta a funcionar {{ $registrationBlock['next']->translatedFormat('l, d/m') }}. Chamados vindos da integração continuam chegando normalmente.</span>
+        </div>
+    @endif
+
     <form method="POST" action="{{ route('tickets.store') }}" enctype="multipart/form-data" class="card form-card">
         @csrf
-        <div class="card__body">
+        <fieldset class="card__body fieldset-reset" @disabled($registrationBlock)>
+            <legend class="sr-only">Dados do chamado</legend>
             @if ($related)
                 <input type="hidden" name="related_ticket_id" value="{{ $related->id }}">
                 <div class="alert alert--info">
@@ -80,10 +88,10 @@
             </div>
 
             <label class="check"><input type="checkbox" name="is_synthetic" value="1" @checked(old('is_synthetic', true))> Marcar como dado de teste</label>
-        </div>
+        </fieldset>
         <div class="card__footer">
             <a href="{{ route('tickets.index') }}" class="btn">Cancelar</a>
-            <button class="btn btn--primary">Registrar</button>
+            <button class="btn btn--primary" @disabled($registrationBlock)>Registrar</button>
         </div>
     </form>
 </x-layouts.app>

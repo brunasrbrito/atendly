@@ -99,7 +99,7 @@
 
             @if ($ticket->solution)
                 <section class="solution-box">
-                    <h3><x-icon name="check" /> {{ $locked ? 'Solução aplicada' : 'Solução em rascunho' }}</h3>
+                    <h2><x-icon name="check" /> {{ $locked ? 'Solução aplicada' : 'Solução em rascunho' }}</h2>
                     <div class="prewrap">{{ $ticket->solution }}</div>
                     @if ($locked)
                         <div class="solution-box__footer">

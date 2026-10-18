@@ -30,7 +30,7 @@
                 <div class="card__body prewrap">{{ $article->problem }}</div>
             </section>
             <section class="solution-box">
-                <h3><x-icon name="check" style="width:16px;vertical-align:-3px" /> Solução</h3>
+                <h2><x-icon name="check" style="width:16px;vertical-align:-3px" /> Solução</h2>
                 <div class="prewrap">{{ $article->solution }}</div>
             </section>
         </div>

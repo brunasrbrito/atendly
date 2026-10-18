@@ -18,4 +18,11 @@ return [
     // Desligado para apresentações em que os dados são anunciados como demo.
     'show_test_marks' => (bool) env('ATENDLY_SHOW_TEST_MARKS', false),
 
+    // Bloqueia o registro MANUAL de chamados em fins de semana e feriados nacionais.
+    // Chamados vindos da integração continuam sendo aceitos (são abertos no sistema de origem).
+    'block_non_business_days' => (bool) env('ATENDLY_BLOCK_NON_BUSINESS_DAYS', true),
+
+    // API pública de feriados nacionais (BrasilAPI).
+    'holidays_api' => env('ATENDLY_HOLIDAYS_API', 'https://brasilapi.com.br/api/feriados/v1'),
+
 ];

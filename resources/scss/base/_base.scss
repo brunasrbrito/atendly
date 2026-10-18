@@ -68,7 +68,7 @@ img {
 
 mark {
     background: var(--mark);
-    color: inherit;
+    color: var(--text); // texto cinza sobre amarelo não passa no contraste
     padding: 0 2px;
     border-radius: 3px;
 }
@@ -174,4 +174,36 @@ pre,
 
 .icon {
     flex-shrink: 0;
+}
+
+// Acessibilidade ---------------------------------------------------------------
+// Link "Pular para o conteúdo": invisível até receber foco pelo teclado (Tab).
+.skip-link {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 100;
+    padding: 0.6rem 1rem;
+    border-radius: $radius-sm;
+    background: var(--primary);
+    color: #fff;
+    font-weight: 700;
+    transform: translateY(-200%);
+    transition: transform 0.15s;
+
+    &:focus {
+        transform: none;
+        text-decoration: none;
+    }
+}
+
+// Destino do skip link não precisa de contorno ao receber foco via script.
+[tabindex='-1']:focus {
+    outline: none;
+}
+
+// Links no meio de texto corrido precisam de algo além da cor (WCAG 1.4.1).
+:where(p, .prewrap, .alert, .locked-note, .solution-box__footer, .field__hint, .empty) a:not(.btn) {
+    text-decoration: underline;
+    text-underline-offset: 2px;
 }

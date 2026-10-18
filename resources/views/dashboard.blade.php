@@ -1,4 +1,14 @@
-@php use App\Support\Highlighter; @endphp
+@php
+    use App\Support\Highlighter;
+    // Resumos em texto dos gráficos, para leitores de tela.
+    $byHour = collect($m['by_hour'])->filter(fn ($h) => $h['median'] !== null);
+    $worstHour = $byHour->sortByDesc('median')->keys()->first();
+    $busiestHour = collect($m['by_hour'])->sortByDesc('count')->keys()->first();
+    $weekdays = collect($m['by_weekday'])->filter(fn ($v) => $v !== null);
+    $worstDay = $weekdays->sortDesc()->keys()->first();
+    $bestDay = $weekdays->sort()->keys()->first();
+    $topCategory = $m['by_category'][0] ?? null;
+@endphp
 <x-layouts.app title="Indicadores">
     <div class="page-header">
         <div class="page-header__titles">
@@ -18,7 +28,7 @@
             @endif
             <nav class="segmented" style="margin:0" aria-label="Período">
                 @foreach ([7, 30, 90] as $d)
-                    <a href="{{ route('dashboard', array_filter(['dias' => $d, 'dados' => $origin])) }}" @class(['segmented__item', 'is-active' => $days === $d])>{{ $d }} dias</a>
+                    <a href="{{ route('dashboard', array_filter(['dias' => $d, 'dados' => $origin])) }}" @class(['segmented__item', 'is-active' => $days === $d]) @if ($days === $d) aria-current="page" @endif>{{ $d }} dias</a>
                 @endforeach
             </nav>
         </div>
@@ -58,24 +68,25 @@
         <section class="card">
             <div class="card__header"><x-icon name="clock" /><h2>Percepção por horário de abertura</h2></div>
             <div class="card__body">
-                <div class="chart-box"><canvas id="chart-hour" role="img" aria-label="Tempo até percepção por hora de abertura"></canvas></div>
+                <div class="chart-box"><canvas id="chart-hour" role="img" aria-label="Tempo até percepção por hora de abertura" aria-describedby="resumo-hora"></canvas></div>
+                <p class="sr-only" id="resumo-hora">@if ($worstHour)Maior tempo até percepção para chamados abertos às {{ $worstHour }}: {{ Highlighter::duration($byHour[$worstHour]['median']) }} (mediana). Horário com mais chamados: {{ $busiestHour }}.@else Sem dados no período.@endif</p>
                 <p class="chart-note">Barras em âmbar passam de 1 hora. A linha mostra quantos chamados abrem em cada horário.</p>
             </div>
         </section>
         <section class="card">
             <div class="card__header"><x-icon name="chart" /><h2>Chamados abertos por dia</h2></div>
             <div class="card__body">
-                <div class="chart-box"><canvas id="chart-day" role="img" aria-label="Volume diário de chamados"></canvas></div>
+                <div class="chart-box"><canvas id="chart-day" role="img" aria-label="Volume diário de chamados: {{ $m['total'] }} chamados em {{ $days }} dias, até {{ collect($m['by_day'])->max() }} por dia"></canvas></div>
                 <p class="chart-note">Últimos {{ $days }} dias · {{ $m['total'] }} chamados.</p>
             </div>
         </section>
         <section class="card">
             <div class="card__header"><x-icon name="clipboard" /><h2>Distribuição por categoria</h2></div>
-            <div class="card__body"><div class="chart-box chart-box--sm"><canvas id="chart-category" role="img" aria-label="Chamados por categoria"></canvas></div></div>
+            <div class="card__body"><div class="chart-box chart-box--sm"><canvas id="chart-category" role="img" aria-label="Chamados por categoria{{ $topCategory ? '. Mais frequente: '.$topCategory['name'].' com '.$topCategory['count'].' chamados. Tabela completa em Tempos por categoria.' : '' }}"></canvas></div></div>
         </section>
         <section class="card">
             <div class="card__header"><x-icon name="timer" /><h2>Percepção por dia da semana</h2></div>
-            <div class="card__body"><div class="chart-box chart-box--sm"><canvas id="chart-weekday" role="img" aria-label="Tempo até percepção por dia da semana"></canvas></div></div>
+            <div class="card__body"><div class="chart-box chart-box--sm"><canvas id="chart-weekday" role="img" aria-label="Tempo até percepção por dia da semana{{ $worstDay ? '. Maior: '.$worstDay.' ('.Highlighter::duration($weekdays[$worstDay]).'). Menor: '.$bestDay.' ('.Highlighter::duration($weekdays[$bestDay]).').' : '' }}"></canvas></div></div>
         </section>
     </div>
 
@@ -101,7 +112,7 @@
 
         <section class="card card--flush">
             <div class="card__header"><x-icon name="clipboard" /><h2>Tempos por categoria</h2></div>
-            <div class="card__body table-wrap">
+            <div class="card__body table-wrap" tabindex="0" role="region" aria-label="Tabela com rolagem horizontal">
                 <table class="table">
                     <thead><tr><th>Categoria</th><th>Chamados</th><th>Até percepção</th><th>Até resolução</th></tr></thead>
                     <tbody>

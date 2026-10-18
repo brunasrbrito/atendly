@@ -13,8 +13,9 @@
     @vite(['resources/scss/app.scss', 'resources/js/app.js'])
 </head>
 <body data-poll-url="{{ route('queue.poll') }}" data-latest-id="{{ $latestTicketId }}" data-poll-seconds="{{ config('atendly.poll_seconds') }}">
+<a href="#conteudo" class="skip-link">Pular para o conteúdo</a>
 <div class="shell">
-    <aside class="sidebar" aria-label="Menu principal">
+    <aside class="sidebar" id="menu-principal" aria-label="Menu principal">
         <a href="{{ route('tickets.index') }}" class="sidebar__brand">
             <x-logo :size="34" />
             <span>
@@ -23,24 +24,24 @@
             </span>
         </a>
 
-        <nav class="nav">
+        <nav class="nav" aria-label="Seções">
             <span class="sidebar__section">Atendimento</span>
-            <a href="{{ route('tickets.index') }}" @class(['nav__link', 'is-active' => request()->routeIs('tickets.*')])>
+            <a href="{{ route('tickets.index') }}" @class(['nav__link', 'is-active' => request()->routeIs('tickets.*')]) @if (request()->routeIs('tickets.*')) aria-current="page" @endif>
                 <x-icon name="inbox" /> Fila de chamados
                 <span class="nav__count {{ $navUnacknowledged ? 'is-alert' : '' }}" data-unack-count @if (! $navUnacknowledged) hidden @endif>{{ $navUnacknowledged }}</span>
             </a>
-            <a href="{{ route('search') }}" @class(['nav__link', 'is-active' => request()->routeIs('search')])>
+            <a href="{{ route('search') }}" @class(['nav__link', 'is-active' => request()->routeIs('search')]) @if (request()->routeIs('search')) aria-current="page" @endif>
                 <x-icon name="search" /> Buscar soluções
             </a>
-            <a href="{{ route('articles.index') }}" @class(['nav__link', 'is-active' => request()->routeIs('articles.*')])>
+            <a href="{{ route('articles.index') }}" @class(['nav__link', 'is-active' => request()->routeIs('articles.*')]) @if (request()->routeIs('articles.*')) aria-current="page" @endif>
                 <x-icon name="book" /> Base de conhecimento
             </a>
 
             <span class="sidebar__section">Gestão</span>
-            <a href="{{ route('dashboard') }}" @class(['nav__link', 'is-active' => request()->routeIs('dashboard')])>
+            <a href="{{ route('dashboard') }}" @class(['nav__link', 'is-active' => request()->routeIs('dashboard')]) @if (request()->routeIs('dashboard')) aria-current="page" @endif>
                 <x-icon name="chart" /> Indicadores
             </a>
-            <a href="{{ route('interviews.index') }}" @class(['nav__link', 'is-active' => request()->routeIs('interviews.*')])>
+            <a href="{{ route('interviews.index') }}" @class(['nav__link', 'is-active' => request()->routeIs('interviews.*')]) @if (request()->routeIs('interviews.*')) aria-current="page" @endif>
                 <x-icon name="clipboard" /> Entrevistas
             </a>
         </nav>
@@ -57,11 +58,11 @@
             </form>
         </div>
     </aside>
-    <div class="sidebar-backdrop" data-toggle-sidebar></div>
+    <div class="sidebar-backdrop" data-toggle-sidebar aria-hidden="true"></div>
 
     <div class="main">
         <header class="topbar">
-            <button class="btn btn--ghost btn--icon topbar__menu" data-toggle-sidebar aria-label="Abrir menu"><x-icon name="menu" /></button>
+            <button class="btn btn--ghost btn--icon topbar__menu" data-toggle-sidebar aria-label="Menu" aria-controls="menu-principal" aria-expanded="false"><x-icon name="menu" /></button>
             <form class="topbar__search search-box" action="{{ route('search') }}" role="search">
                 <x-icon name="search" />
                 <input class="input" type="search" name="q" value="{{ request()->routeIs('search') ? request('q') : '' }}" placeholder="Buscar soluções anteriores…" aria-label="Buscar soluções" data-search-shortcut>
@@ -81,7 +82,7 @@
             </button>
         </header>
 
-        <main class="content">
+        <main class="content" id="conteudo" tabindex="-1">
             @if (session('success'))
                 <div class="alert alert--success" role="status"><x-icon name="check" /> {{ session('success') }}</div>
             @endif

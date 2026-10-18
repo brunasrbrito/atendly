@@ -33,8 +33,8 @@
                 <x-field-error name="profile" />
             </div>
             <div class="field">
-                <span class="field__label">Temas</span>
-                <div class="chips">
+                <span class="field__label" id="temas-label">Temas</span>
+                <div class="chips" role="group" aria-labelledby="temas-label">
                     @foreach ($themes as $key => $label)
                         <label class="check"><input type="checkbox" name="themes[]" value="{{ $key }}" @checked(in_array($key, old('themes', $interview->themes ?? [])))> {{ $label }}</label>
                     @endforeach

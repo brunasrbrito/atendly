@@ -88,6 +88,45 @@ php artisan atendly:simular            # 1 chamado
 php artisan atendly:simular 5 --intervalo=20
 ```
 
+## API externa: feriados nacionais (BrasilAPI)
+
+O registro **manual** de chamados só é permitido em dias úteis. O Atendly consulta os feriados nacionais na [BrasilAPI](https://brasilapi.com.br/docs#tag/Feriados-Nacionais):
+
+```http
+GET https://brasilapi.com.br/api/feriados/v1/2026
+→ [{"date": "2026-11-02", "name": "Finados", "type": "national"}, ...]
+```
+
+- `app/Services/BusinessCalendar.php` junta a regra de fim de semana com os feriados da API.
+- O resultado fica em cache por 30 dias, então a API é chamada uma vez por ano consultado.
+- Se a API estiver fora do ar, vale só a regra de fim de semana e uma nova tentativa é feita em 10 minutos. O sistema nunca para por causa dela.
+- Em sábado, domingo ou feriado, o botão "Registrar chamado" fica desabilitado com o motivo ("Feriado: Finados") e a data do próximo dia útil. O envio também é recusado no servidor.
+- Chamados vindos da **integração continuam sendo aceitos** nesses dias: eles são abertos no sistema de origem, e recusá-los faria o chamado se perder.
+- A regra pode ser desligada com `ATENDLY_BLOCK_NON_BUSINESS_DAYS=false`.
+- A conexão HTTPS usa os certificados do sistema ou o pacote da Mozilla (`composer/ca-bundle`), sem desligar a verificação SSL.
+
+## Acessibilidade
+
+Meta: **WCAG 2.1 nível AA**.
+
+| Medida | Onde |
+|---|---|
+| Contraste mínimo de 4,5:1 em textos, selos e botões, nos temas claro e escuro (paleta recalculada) | `resources/scss/base/_theme.scss` |
+| Link "Pular para o conteúdo" no primeiro Tab | layouts `app` e `auth` |
+| `lang="pt-BR"`, landmarks (`main`, `nav`, `aside`) e título único por página | layouts |
+| Página atual indicada com `aria-current` no menu e nos filtros | menu, fila, indicadores |
+| Botões só com ícone têm nome acessível; o botão de som informa o estado (`aria-pressed`) | topo |
+| Menu do celular com `aria-expanded`, foco no primeiro item e fechamento com Esc | `resources/js/modules/ui.js` |
+| Mensagens de erro ligadas ao campo (`aria-invalid` + `aria-describedby`), com foco no primeiro campo inválido | formulários |
+| Diálogo nativo (`<dialog>`) com foco preso, Esc para fechar e título associado | "Resolver chamado" |
+| Avisos de novos chamados em região `aria-live` | fila |
+| Gráficos com descrição em texto para leitores de tela | indicadores |
+| Prioridade indicada por barras e texto, não só por cor; links em texto corrido sublinhados | componentes |
+| Foco visível em todos os elementos; temas das entrevistas acessíveis por teclado | estilos |
+| Respeita `prefers-reduced-motion` e `prefers-color-scheme` | estilos |
+
+**Auditoria:** [axe-core 4.10](https://github.com/dequelabs/axe-core) (o motor do Lighthouse), regras WCAG 2 A/AA, 2.1 AA e boas práticas. **0 violações** em login, fila, chamado aberto, chamado encerrado, registro de chamado, busca, base de conhecimento, artigo, indicadores, entrevistas e formulário de entrevista, nos temas claro e escuro. Garantias estruturais (skip link, idioma, `aria-current`, nomes de botões) também têm testes automatizados em `tests/Feature/AccessibilityTest.php`.
+
 ## Configuração (`.env`)
 
 | Variável | Padrão | Uso |
@@ -96,6 +135,9 @@ php artisan atendly:simular 5 --intervalo=20
 | `ATENDLY_POLL_SECONDS` | 15 | Intervalo de verificação da fila |
 | `ATENDLY_ACK_ALERT_MINUTES` | 15 | Meta de percepção para chamados sem categoria |
 | `APP_TIMEZONE` | America/Sao_Paulo | Fuso usado nos horários |
+| `ATENDLY_BLOCK_NON_BUSINESS_DAYS` | true | Bloqueia o registro manual em fins de semana e feriados |
+| `ATENDLY_HOLIDAYS_API` | BrasilAPI | Endereço da API de feriados |
+| `ATENDLY_SHOW_TEST_MARKS` | false | Mostra o selo "Teste" nos dados demo |
 
 As metas de resposta e de resolução por categoria ficam na tabela `categories`.
 
@@ -108,6 +150,7 @@ app/
     TicketService.php    ciclo de vida: receber, assumir, interagir, encerrar, vincular artigo
     KnowledgeSearch.php  busca FULLTEXT (MySQL) com fallback LIKE (SQLite nos testes)
     MetricsService.php   indicadores do diagnóstico
+    BusinessCalendar.php dias úteis: fim de semana + feriados da BrasilAPI
   Support/
     SyntheticTicketGenerator.php  gerador de chamados sintéticos
   Rules/NoPersonalData.php        bloqueia dados identificáveis nas entrevistas
@@ -125,7 +168,7 @@ resources/
 php artisan test
 ```
 
-Os testes usam SQLite em memória (extensão `pdo_sqlite` necessária). Nesse caso a busca usa o fallback com `LIKE`, então o ranqueamento FULLTEXT só é exercitado com MySQL.
+Os testes usam SQLite em memória (extensão `pdo_sqlite` necessária), com o relógio fixo numa quarta-feira e a BrasilAPI simulada (`Http::fake`). Eles não dependem do dia nem da internet. Nesse caso a busca usa o fallback com `LIKE`, então o ranqueamento FULLTEXT só é exercitado com MySQL.
 
 ## Hipóteses embutidas na base sintética
 

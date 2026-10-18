@@ -32,7 +32,7 @@
     </form>
 
     <div class="card card--flush">
-        <div class="table-wrap">
+        <div class="table-wrap" tabindex="0" role="region" aria-label="Tabela com rolagem horizontal">
             <table class="table">
                 <thead><tr><th>Artigo</th><th>Categoria</th><th>Usado em</th><th>Visualizações</th><th>Atualizado</th></tr></thead>
                 <tbody>

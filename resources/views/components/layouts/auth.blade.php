@@ -13,6 +13,7 @@
     @vite(['resources/scss/app.scss', 'resources/js/app.js'])
 </head>
 <body>
+<a href="#conteudo" class="skip-link">Pular para o conteúdo</a>
 <main class="login">
     <section class="login__brand-panel" aria-hidden="true">
         <div class="logo-wordmark"><x-logo :size="36" /> Atendly</div>
@@ -28,10 +29,10 @@
             </ul>
         </div>
 
-        <span class="small" style="color:#61716e">Central de suporte de TI</span>
+        <span class="small" style="color:#8a9c99">Central de suporte de TI</span>
     </section>
 
-    <section class="login__form-panel">
+    <section class="login__form-panel" id="conteudo" tabindex="-1">
         <div class="login__card">
             <div class="login__brand">
                 <x-logo :size="34" /> Atendly

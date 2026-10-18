@@ -10,9 +10,10 @@
     --border-strong: #cfdad7;
     --text: #12201e;
     --text-muted: #5e6e6b;
-    --text-subtle: #8a9895;
-    --primary: #{brand(600)};
-    --primary-hover: #{brand(700)};
+    --text-subtle: #636f6c;
+    // Botão primário: verde mais escuro para texto branco passar no contraste AA (5,3:1).
+    --primary: #0b7a67;
+    --primary-hover: #{brand(800)};
     --primary-soft: #{brand(50)};
     --primary-text: #{brand(700)};
     --focus: #{brand(400)};
@@ -27,10 +28,12 @@
     --success-soft: #ecfdf5;
     --sidebar-bg: #0b1a1d;
     --sidebar-text: #a9bab7;
-    --sidebar-muted: #61716e;
+    --sidebar-muted: #8a9c99;
     --sidebar-hover: #13272b;
     --sidebar-active: #173238;
     --mark: #fde68a;
+    // Quanto da cor do selo entra no texto (o resto é a cor do texto): garante contraste AA.
+    --badge-ink: 50%;
     --shadow-sm: 0 1px 2px rgb(16 32 30 / 5%);
     --shadow: 0 1px 2px rgb(16 32 30 / 5%), 0 2px 6px rgb(16 32 30 / 5%);
     --shadow-lg: 0 16px 40px rgb(16 32 30 / 14%), 0 2px 6px rgb(16 32 30 / 6%);
@@ -46,9 +49,9 @@
     --border-strong: #2d4549;
     --text: #e4eeec;
     --text-muted: #93a5a2;
-    --text-subtle: #6c7f7c;
-    --primary: #{brand(500)};
-    --primary-hover: #{brand(400)};
+    --text-subtle: #82948f;
+    --primary: #0b7a67;
+    --primary-hover: #{brand(600)};
     --primary-soft: #10302b;
     --primary-text: #{brand(300)};
     --attention-soft: #33250b;
@@ -63,6 +66,7 @@
     --sidebar-hover: #0f1f22;
     --sidebar-active: #13292d;
     --mark: #7c5a0b;
+    --badge-ink: 78%;
     --shadow-sm: 0 1px 2px rgb(0 0 0 / 30%);
     --shadow: 0 1px 2px rgb(0 0 0 / 35%), 0 2px 8px rgb(0 0 0 / 25%);
     --shadow-lg: 0 16px 40px rgb(0 0 0 / 55%);

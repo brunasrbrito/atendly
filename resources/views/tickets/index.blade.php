@@ -6,7 +6,12 @@
             <p>Quem está esperando aparece primeiro. Novos chamados chegam automaticamente.</p>
         </div>
         <div class="page-header__actions">
-            <a href="{{ route('tickets.create') }}" class="btn"><x-icon name="plus" /> Registrar chamado</a>
+            @if ($registrationBlock)
+                <button type="button" class="btn" disabled aria-describedby="registro-bloqueado"><x-icon name="plus" /> Registrar chamado</button>
+                <span id="registro-bloqueado" class="small muted" style="align-self:center">{{ $registrationBlock['reason'] }}: registro manual volta {{ $registrationBlock['next']->translatedFormat('l, d/m') }}</span>
+            @else
+                <a href="{{ route('tickets.create') }}" class="btn"><x-icon name="plus" /> Registrar chamado</a>
+            @endif
         </div>
     </div>
 
@@ -71,11 +76,12 @@
                     <option value="{{ $priority->value }}" @selected(request('prioridade') === $priority->value)>{{ $priority->label() }}</option>
                 @endforeach
             </select>
+            <button class="sr-only">Aplicar filtros</button>
         </form>
     </div>
 
     <div class="card card--flush">
-        <ul class="queue">
+        <ul class="queue" aria-label="Chamados">
             @forelse ($tickets as $ticket)
                 @php
                     $isPending = $ticket->acknowledged_at === null && $ticket->status->isOpen();

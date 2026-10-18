@@ -1,10 +1,31 @@
 /** Pequenos comportamentos de interface. */
 export function initUi() {
-    // Menu lateral no celular
+    // Menu lateral no celular (aria-expanded informa o estado ao leitor de tela; Esc fecha)
     const sidebar = document.querySelector('.sidebar');
+    const menuButton = document.querySelector('.topbar__menu');
+    const setMenu = (open) => {
+        sidebar?.classList.toggle('is-open', open);
+        menuButton?.setAttribute('aria-expanded', String(open));
+        if (open) sidebar?.querySelector('a')?.focus();
+    };
     document.querySelectorAll('[data-toggle-sidebar]').forEach((btn) =>
-        btn.addEventListener('click', () => sidebar?.classList.toggle('is-open')),
+        btn.addEventListener('click', () => setMenu(!sidebar?.classList.contains('is-open'))),
     );
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && sidebar?.classList.contains('is-open')) {
+            setMenu(false);
+            menuButton?.focus();
+        }
+    });
+
+    // Liga cada mensagem de erro ao seu campo: o leitor de tela anuncia o erro ao focar.
+    document.querySelectorAll('.field__error[id]').forEach((error) => {
+        const control = error.closest('.field')?.querySelector('input:not([type=hidden]), select, textarea');
+        if (!control) return;
+        control.setAttribute('aria-invalid', 'true');
+        control.setAttribute('aria-describedby', [control.getAttribute('aria-describedby'), error.id].filter(Boolean).join(' '));
+    });
+    document.querySelector('[aria-invalid=true]')?.focus();
 
     // Atalho "/" foca a busca de soluções (fora de campos de texto)
     const search = document.querySelector('[data-search-shortcut]');
